@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Example from "./ModalMovie.jsx"
 
 import Select from 'react-select';
-import { Navbar, Nav, NavItem, Grid, Row, Col, FormGroup, InputGroup, FormControl, Button, Table } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, Grid, Row, Col, FormGroup, InputGroup, FormControl, Button, Table, ModalDialog } from 'react-bootstrap';
 import axios from 'axios';
+
 
 const API_KEY = "37662c76ffc19e5cd1b95f37d77155fc";
 
@@ -20,9 +22,10 @@ export class Search extends React.Component {
             genre: null,                // Начальное состояние для фильтра 'Жанр'.
             year: null,                 // Начальное состояние для фильтра 'Год'.
             searchInput: null,          // Начальное состояние для фильтра 'Поиск по названию фильму'.
-            result: []                  // Список отображаемых фильмов.
+            result: []
+                
         }
-
+       
         /**
          * Делаем привязку контекста для обработчиков событий.
          * "Зашиваем" в методы ссылку на текущий объект, чтобы в теле метода this ссылался на объект.
@@ -32,6 +35,14 @@ export class Search extends React.Component {
         this.handleYearChange = this.handleYearChange.bind(this);
         this.handleSearchInputChange = this.handleSearchInputChange.bind(this);
         this.handleSearchButtonClick = this.handleSearchButtonClick.bind(this);
+        this.handleButtonClick = this.handleButtonClick.bind(this);
+    }
+
+    /**Модальное окно */
+    handleButtonClick(event) {
+       var tr = event.target.parentNode;
+       var ex = <Example movie = {this.state.result[tr.id]} />;
+       ReactDOM.render(ex, document.getElementById('modal'));
     }
 
     /**
@@ -39,8 +50,8 @@ export class Search extends React.Component {
      */
     handleFormatChange(selectedOption) {
         // Фильтруем по формату.
-        const resultArray = MOVIES.filter(
-            (item) => item.format.indexOf(selectedOption.value) !== -1
+        const resultArray = this.state.result.filter(
+            (item) => item.Format.indexOf(selectedOption.value) !== -1
         );
 
         this.setState({
@@ -55,7 +66,7 @@ export class Search extends React.Component {
     handleGenreChange(selectedOption) {
         // Фильтруем по жанрам. Не забываем при этом, что жанров может быть много, они лежат в массиве.
         // Это не сильно усложняет условие фильтрации, ведь indexOf метод прекрасно работает как со строкой так и с массивом.
-        const resultArray = MOVIES.filter(
+        const resultArray = this.state.result.filter(
             (item) => item.genre_ids.indexOf(selectedOption.value) !== -1
         );
 
@@ -71,7 +82,7 @@ export class Search extends React.Component {
     handleYearChange(selectedOption) {
 
         // Фильтруем по году.
-        const resultArray = MOVIES.filter(
+        const resultArray = this.state.result.filter(
             (item) => item.release_date.indexOf(selectedOption.value) !== -1
         );
 
@@ -89,6 +100,8 @@ export class Search extends React.Component {
             searchInput: event.target.value
         });
     }
+
+
 
     /**
      * Обработчик нажатия на кнопку 'Поиск'.
@@ -208,10 +221,10 @@ export class Search extends React.Component {
                                     <th>Рейтинг</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody  onClick={this.handleButtonClick}>
                                 {
                                     this.state.result.map((item, index) => (
-                                        <tr key={index}>
+                                        <tr key={index} id = {index}>
                                             <td className="poster-cell"><img src={`http://image.tmdb.org/t/p/w92/${item.poster_path}`} /></td>
                                             <td>{item.title}</td>
                                             <td>Кино</td>
@@ -225,7 +238,7 @@ export class Search extends React.Component {
                     </Col>
                 </Row>
             </Grid>
-
+        
         )
     }
 }

@@ -1,3 +1,10 @@
 /*
  * Сюда можно полжить свои стили.
  */
+ table{
+     text-align: center;
+ }
+ .modal-dialog{
+     margin-top:15%;
+ }
+ 
